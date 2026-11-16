@@ -33,7 +33,7 @@ function ProductosList() {
     obtenerProductos()
   }, [])
 
-  // REGISTRAR NUEVO PRODUCTO
+  // REGISTRAR PRODUCTO
   const nuevoProducto = () => {
     setProductoEditar(null)
     setMostrarFormulario(true)
@@ -43,6 +43,43 @@ function ProductosList() {
   const editarProducto = (producto) => {
     setProductoEditar(producto)
     setMostrarFormulario(true)
+  }
+
+  // ELIMINAR PRODUCTO
+  const eliminarProducto = async (producto) => {
+
+    const confirmar = window.confirm(
+      `¿Estás seguro de eliminar el producto ${producto.nombre}?`
+    )
+
+    if (!confirmar) {
+      return
+    }
+
+    setError('')
+
+    try {
+
+      await api.delete(`${ENDPOINTS.productos}${producto.id}/`)
+
+      await obtenerProductos()
+
+    } catch (error) {
+
+      if (error.response?.status === 409 ||
+          error.response?.status === 400 ||
+          error.response?.status === 500) {
+
+        setError(
+          'No se pudo eliminar el producto. Puede tener movimientos asociados.'
+        )
+
+      } else {
+
+        setError('No se pudo eliminar el producto.')
+
+      }
+    }
   }
 
   // GUARDAR PRODUCTO
@@ -59,7 +96,7 @@ function ProductosList() {
   }
 
   return (
-    <div>
+    <div className="seccion-productos">
 
       {mostrarFormulario ? (
 
@@ -73,41 +110,87 @@ function ProductosList() {
 
         <>
 
-          <h2>Lista de productos</h2>
+          <h2 className="titulo-productos">Productos</h2>
 
-          <button onClick={nuevoProducto}>
-            Registrar producto
-          </button>
+          <div className="contenedor-registrar">
+            <button
+              className="boton-registrar"
+              onClick={nuevoProducto}
+            >
+              Registrar
+            </button>
+          </div>
 
           {cargando && <p>Cargando productos...</p>}
 
-          {error && <p>{error}</p>}
+          {error && <p className="mensaje-error">{error}</p>}
 
-          {!cargando && !error && productos.length === 0 && (
-            <p>No hay productos registrados.</p>
-          )}
+          <div className="contenedor-tabla-productos">
 
-          {productos.map((producto) => (
+            <table className="tabla-productos">
 
-            <div key={producto.id}>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Código</th>
+                  <th>Precio</th>
+                  <th>Stock</th>
+                  <th>Descripción</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
 
-              <h3>{producto.nombre}</h3>
+              <tbody>
 
-              <p>Código: {producto.codigo}</p>
+                {!cargando && productos.length === 0 && (
+                  <tr>
+                    <td colSpan="6">
+                      No hay productos registrados.
+                    </td>
+                  </tr>
+                )}
 
-              <p>Precio: ${producto.precio}</p>
+                {productos.map((producto) => (
 
-              <p>Stock: {producto.stock}</p>
+                  <tr key={producto.id}>
 
-              <p>Descripción: {producto.descripcion}</p>
+                    <td>{producto.nombre}</td>
 
-              <button onClick={() => editarProducto(producto)}>
-                Editar
-              </button>
+                    <td>{producto.codigo}</td>
 
-            </div>
+                    <td>${producto.precio}</td>
 
-          ))}
+                    <td>{producto.stock}</td>
+
+                    <td>{producto.descripcion}</td>
+
+                    <td className="acciones-productos">
+
+                      <button
+                        className="boton-editar"
+                        onClick={() => editarProducto(producto)}
+                      >
+                        Editar
+                      </button>
+
+                      <button
+                        className="boton-eliminar"
+                        onClick={() => eliminarProducto(producto)}
+                      >
+                        Eliminar
+                      </button>
+
+                    </td>
+
+                  </tr>
+
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
 
         </>
 

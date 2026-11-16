@@ -1,12 +1,15 @@
+
 import { useState } from 'react'
-import { login } from '../api/client' // Metodo login exportado de client
+import { login } from '../api/client'
 
 function Login({ onLoginSuccess }) {
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
 
+  // INICIAR SESION
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -16,11 +19,13 @@ function Login({ onLoginSuccess }) {
     try {
       const data = await login(username, password)
       onLoginSuccess(data)
+
     } catch (error) {
       setError(
         error.response?.data?.detail ||
         'No se pudo iniciar sesión. Comprueba tus datos.'
       )
+
     } finally {
       setCargando(false)
     }
@@ -28,34 +33,65 @@ function Login({ onLoginSuccess }) {
 
   return (
     <div className="login-container">
-      <h1>SuperMarket Manager</h1>
-      <h2>Iniciar sesión</h2>
 
-      <form onSubmit={handleSubmit}>
-        <label>Usuario</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Ingresa tu usuario"
-          required
-        />
+      <h1 className="login-titulo">
+        Administrador de inventario
+      </h1>
 
-        <label>Contraseña</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Ingresa tu contraseña"
-          required
-        />
+      <p className="login-subtitulo">
+        Por favor inicie sesión
+      </p>
 
-        {error && <p className="error">{error}</p>}
+      <div className="login-caja">
 
-        <button type="submit" disabled={cargando}>
-          {cargando ? 'Ingresando...' : 'Iniciar sesión'}
-        </button>
-      </form>
+        <form className="login-formulario" onSubmit={handleSubmit}>
+
+          <label htmlFor="usuario" className="login-etiqueta">
+            Usuario
+          </label>
+
+          <input
+            id="usuario"
+            className="login-input"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Ingrese su usuario"
+            autoComplete="username"
+            required
+          />
+
+          <label htmlFor="contrasena" className="login-etiqueta">
+            Contraseña
+          </label>
+
+          <input
+            id="contrasena"
+            className="login-input"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Ingrese su contraseña"
+            autoComplete="current-password"
+            required
+          />
+
+          {error && (
+            <p className="login-error">{error}</p>
+          )}
+
+          <button
+            className="login-boton"
+            type="submit"
+            disabled={cargando}
+          >
+            {cargando ? 'Ingresando...' : 'Iniciar sesión'}
+          </button>
+
+        </form>
+
+      </div>
+
     </div>
   )
 }

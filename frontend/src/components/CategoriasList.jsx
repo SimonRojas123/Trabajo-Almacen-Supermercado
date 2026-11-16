@@ -18,7 +18,6 @@ function CategoriasList() {
 
     try {
       const respuesta = await api.get(ENDPOINTS.categorias)
-
       setCategorias(respuesta.data.results || respuesta.data)
 
     } catch (error) {
@@ -45,6 +44,38 @@ function CategoriasList() {
     setMostrarFormulario(true)
   }
 
+  // ELIMINAR CATEGORIA
+  const eliminarCategoria = async (categoria) => {
+
+    const confirmar = window.confirm(
+      `¿Estás seguro de eliminar la categoría ${categoria.nombre}?`
+    )
+
+    if (!confirmar) {
+      return
+    }
+
+    setError('')
+
+    try {
+      await api.delete(`${ENDPOINTS.categorias}${categoria.id}/`)
+      await obtenerCategorias()
+
+    } catch (error) {
+
+      if (error.response?.status === 400 ||
+          error.response?.status === 409) {
+
+        setError(
+          'No se pudo eliminar la categoría. Puede tener productos asociados.'
+        )
+
+      } else {
+        setError('No se pudo eliminar la categoría.')
+      }
+    }
+  }
+
   // GUARDAR CATEGORIA
   const guardarCategoria = () => {
     setMostrarFormulario(false)
@@ -59,7 +90,7 @@ function CategoriasList() {
   }
 
   return (
-    <div>
+    <div className="seccion-categorias">
 
       {mostrarFormulario ? (
 
@@ -72,39 +103,80 @@ function CategoriasList() {
       ) : (
 
         <>
+          <h2 className="titulo-categorias">Categoría</h2>
 
-          <h2>Lista de categorías</h2>
-
-          <button onClick={nuevaCategoria}>
-            Registrar categoría
-          </button>
+          <div className="contenedor-registrar">
+            <button
+              className="boton-registrar"
+              onClick={nuevaCategoria}
+            >
+              Registrar
+            </button>
+          </div>
 
           {cargando && <p>Cargando categorías...</p>}
 
-          {error && <p>{error}</p>}
+          {error && <p className="mensaje-error">{error}</p>}
 
-          {!cargando && !error && categorias.length === 0 && (
-            <p>No hay categorías registradas.</p>
-          )}
+          <div className="contenedor-tabla-categorias">
 
-          {categorias.map((categoria) => (
+            <table className="tabla-categorias">
 
-            <div key={categoria.id}>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
 
-              <h3>{categoria.nombre}</h3>
+              <tbody>
 
-              <p>Descripción: {categoria.descripcion}</p>
+                {!cargando && categorias.length === 0 && (
+                  <tr>
+                    <td colSpan="3">
+                      No hay categorías registradas.
+                    </td>
+                  </tr>
+                )}
 
-              <button onClick={() => editarCategoria(categoria)}>
-                Editar
-              </button>
+                {categorias.map((categoria) => (
 
-            </div>
+                  <tr key={categoria.id}>
 
-          ))}
+                    <td>{categoria.nombre}</td>
 
+                    <td>{categoria.descripcion}</td>
+
+                    <td className="acciones-categorias">
+
+                      <button
+                        className="boton-editar"
+                        onClick={() => editarCategoria(categoria)}
+                      >
+                        Editar
+                      </button>
+
+                      <button
+                        className="boton-eliminar"
+                        onClick={() => eliminarCategoria(categoria)}
+                      >
+                        Eliminar
+                      </button>
+
+                    </td>
+
+                  </tr>
+
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
         </>
-
+        
       )}
 
     </div>

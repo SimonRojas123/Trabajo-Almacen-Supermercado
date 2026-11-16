@@ -1,3 +1,4 @@
+from django.db.models.deletion import ProtectedError #Actua si algun atributo con PROTECT falla
 from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
@@ -11,11 +12,29 @@ class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
 
+    # ELIMINAR CATEGORIA
+    def perform_destroy(self, instance):
+
+        try:
+            instance.delete()
+
+        except ProtectedError:
+            raise ValidationError('No se puede eliminar la categoría porque tiene productos.')
+
+
 
 class ProductosViewSet(viewsets.ModelViewSet):
 
     queryset = Productos.objects.select_related('categoria').all()
     serializer_class = ProductosSerializer
+
+    def perform_destroy(self, instance):
+
+        try:
+            instance.delete()
+
+        except ProtectedError:
+            raise ValidationError('No se puede eliminar el producto porque tiene movimientos registrados.')
 
 
 class AccionesViewSet(viewsets.ModelViewSet):
@@ -25,7 +44,6 @@ class AccionesViewSet(viewsets.ModelViewSet):
     serializer_class = AccionesSerializer
 
 
-    # REGISTRAR UNA ACCION
     def perform_create(self, serializer): # Metodo propio de Django Rest, se ejecuta cuando hacemos un POST
 
         with transaction.atomic(): #Evita que la accion se realize en caso de que algo falle

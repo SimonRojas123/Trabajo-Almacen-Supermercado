@@ -11,93 +11,70 @@ function Dashboard({ onLogout }) {
     <div className="contenedor-panel">
 
       <header className="encabezado-panel">
-        <h1>SuperMarket Manager</h1>
+        <h1>Bienvenido al administrador de almacenamiento</h1>
 
         <button onClick={onLogout}>
-          Cerrar sesión
+          Logout
         </button>
       </header>
 
       <main className="contenido-panel">
 
         {seccion === 'inicio' ? (
-          <>
-            <h2>Panel principal</h2>
-            <p>¡Bienvenido al sistema de gestión de inventario!</p>
+          <div className="menu-panel">
 
-            <div className="menu-panel">
+            <div className="tarjeta-panel">
+              <h3>Productos</h3>
+              <p>Registrar, consultar, editar y eliminar productos.</p>
 
-              <div className="tarjeta-panel">
-                <h3>Productos</h3>
-                <p>Registrar, consultar, editar y eliminar productos.</p>
-
-                <button onClick={() => setSeccion('productos')}>
-                  Administrar productos
-                </button>
-              </div>
-
-              <div className="tarjeta-panel">
-                <h3>Categorías</h3>
-                <p>Administrar las categorías de los productos.</p>
-
-                <button onClick={() => setSeccion('categorias')}>
-                  Administrar categorías
-                </button>
-              </div>
-
-              <div className="tarjeta-panel">
-                <h3>Movimientos</h3>
-                <p>Registrar ingresos y retiros de stock.</p>
-
-                <button onClick={() => setSeccion('movimientos')}>
-                  Administrar movimientos
-                </button>
-              </div>
-
-              <div className="tarjeta-panel">
-                <h3>Historial</h3>
-                <p>Consultar los movimientos del inventario.</p>
-
-                <button onClick={() => setSeccion('historial')}>
-                  Ver historial
-                </button>
-              </div>
-
+              <button onClick={() => setSeccion('productos')}>
+                Administrar productos
+              </button>
             </div>
-          </>
-        ) : seccion === 'productos' ? (
+
+            <div className="tarjeta-panel">
+              <h3>Movimientos</h3>
+              <p>Registrar ingresos y retiros de stock.</p>
+
+              <button onClick={() => setSeccion('movimientos')}>
+                Administrar movimientos
+              </button>
+            </div>
+
+            <div className="tarjeta-panel">
+              <h3>Categorías</h3>
+              <p>Administrar las categorías de los productos.</p>
+
+              <button onClick={() => setSeccion('categorias')}>
+                Administrar categorías
+              </button>
+            </div>
+
+            <div className="tarjeta-panel">
+              <h3>Historial</h3>
+              <p>Consultar los movimientos del inventario.</p>
+
+              <button onClick={() => setSeccion('historial')}>
+                Ver historial
+              </button>
+            </div>
+
+          </div>
+        ) : (
           <>
-            <button onClick={() => setSeccion('inicio')}>
-              Volver al panel principal
+            <button
+              className="boton-volver"
+              onClick={() => setSeccion('inicio')}
+            >
+              Volver
             </button>
 
-            <ProductosList />
+            {seccion === 'productos' && <ProductosList />}
+            {seccion === 'categorias' && <CategoriasList />}
+            {seccion === 'movimientos' && <MovimientosList />}
+            {seccion === 'historial' && <HistorialList />}
           </>
-        ) : seccion === 'categorias' ? (
-          <>
-            <button onClick={() => setSeccion('inicio')}>
-              Volver al panel principal
-            </button>
-
-            <CategoriasList />
-          </>
-        ) : seccion === 'movimientos' ? (
-          <>
-            <button onClick={() => setSeccion('inicio')}>
-              Volver al panel principal
-            </button>
-
-            <MovimientosList />
-          </>
-        ) : seccion === 'historial' ? (
-          <>
-            <button onClick={() => setSeccion('inicio')}>
-              Volver al panel principal
-            </button>
-
-            <HistorialList />
-          </>
-        ) : null}
+        )}
 
       </main>
     </div>
