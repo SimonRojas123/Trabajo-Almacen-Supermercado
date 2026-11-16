@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import ProductosList from './ProductosList'
 import CategoriasList from './CategoriasList'
+import MovimientosList from './MovimientosList'
+import HistorialList from './HistorialList'
 
 function Dashboard({ onLogout }) {
   const [seccion, setSeccion] = useState('inicio')
@@ -46,11 +48,19 @@ function Dashboard({ onLogout }) {
               <div className="tarjeta-panel">
                 <h3>Movimientos</h3>
                 <p>Registrar ingresos y retiros de stock.</p>
+
+                <button onClick={() => setSeccion('movimientos')}>
+                  Administrar movimientos
+                </button>
               </div>
 
               <div className="tarjeta-panel">
                 <h3>Historial</h3>
                 <p>Consultar los movimientos del inventario.</p>
+
+                <button onClick={() => setSeccion('historial')}>
+                  Ver historial
+                </button>
               </div>
 
             </div>
@@ -63,7 +73,7 @@ function Dashboard({ onLogout }) {
 
             <ProductosList />
           </>
-        ) : (
+        ) : seccion === 'categorias' ? (
           <>
             <button onClick={() => setSeccion('inicio')}>
               Volver al panel principal
@@ -71,7 +81,23 @@ function Dashboard({ onLogout }) {
 
             <CategoriasList />
           </>
-        )}
+        ) : seccion === 'movimientos' ? (
+          <>
+            <button onClick={() => setSeccion('inicio')}>
+              Volver al panel principal
+            </button>
+
+            <MovimientosList />
+          </>
+        ) : seccion === 'historial' ? (
+          <>
+            <button onClick={() => setSeccion('inicio')}>
+              Volver al panel principal
+            </button>
+
+            <HistorialList />
+          </>
+        ) : null}
 
       </main>
     </div>
